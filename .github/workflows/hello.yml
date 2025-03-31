@@ -12,3 +12,15 @@ jobs:
       - name: Say hello
         run: |
           echo "Hello World!"
+  display_time_job:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Display time
+        run: |
+          date
+  display_directory.job:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Display directory
+        run: |
+          ls -l
