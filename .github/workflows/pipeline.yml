@@ -41,8 +41,7 @@ jobs:
       - name: Bump version and push tag
         env:
           COMMIT_CONTAINS: contains(${{ toJson(github.event.commits.*.message) }}, \#skip)
-        if: ${{ github.event_name == 'push' }} && !COMMIT_CONTAINS
-        uses: anothrNick/github-tag-action@1.71.0
-        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
+        if: ${{ github.event_name == 'push' }} && !COMMIT_CONTAINS
+        uses: anothrNick/github-tag-action@1.71.0
