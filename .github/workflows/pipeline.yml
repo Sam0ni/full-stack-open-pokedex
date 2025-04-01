@@ -48,7 +48,7 @@ jobs:
       - name: Check env
         env:
           COMMIT_CONTAINS: ${{ contains(toJson(github.event.commits.*.message), '#skip') }}
-        run: echo "$COMMIT_CONTAINS"
+        run: echo ${{ env.COMMIT_CONTAINS == 'false' }}
       - name: commit messages
         env:
           COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
