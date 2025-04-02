@@ -24,6 +24,15 @@ jobs:
         run: npm run test
       - name: Build app
         run: npm run build
+      - name: on failure
+        if: failure()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          nodetail: true
+          title: "Build failed!"
+          description: |
+            Commit `${{ github.event.head_commit }}` didn't build.
       - name: Run e2e tests
         uses: cypress-io/github-action@v5
         with:
@@ -35,6 +44,14 @@ jobs:
           COMMIT_CONTAINS: ${{ contains(toJson(github.event.commits.*.message), '#skip') }}
         if: ${{ github.event_name == 'push' &&  env.COMMIT_CONTAINS == 'false' }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+      - name: On deployment
+        if: ${{ github.event_name == 'push' &&  success() }}
+        uses: sarisia/actions-status-discord@v1
+        with:
+          username: MrGithub
+          nodetail: true
+          description: Success!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
@@ -47,26 +64,3 @@ jobs:
           DEFAULT_BUMP: patch
         if: ${{ github.event_name == 'push'  &&  env.COMMIT_CONTAINS == 'false' }}
         uses: anothrNick/github-tag-action@1.71.0
-  status_check:
-    needs: [simple_deployment_pipeline, tag_release]
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: on success
-        env:
-          WAS_SUCCESS: ${{ success() }}
-        if: ${{ env.WAS_SUCCESS == 'true' }}
-        uses: rjstone/discord-webhook-notify@v1
-        with:
-          severity: info
-          details: Build completed succesfully
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-      - name: on failure
-        env:
-          WAS_SUCCESS: ${{ success() }}
-        if: ${{ env.WAS_SUCCESS == 'false' }}
-        uses: rjstone/discord-webhook-notify@v1
-        with:
-          severity: error
-          details: Build failed
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
