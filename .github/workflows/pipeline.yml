@@ -43,6 +43,8 @@ jobs:
           nodetail: true
           description: Success!
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          description: |
+            The app has been deployed!
       - name: on failure
         if: failure()
         uses: sarisia/actions-status-discord@v1
@@ -51,7 +53,7 @@ jobs:
           nodetail: true
           title: "Build failed!"
           description: |
-            Commit `${{ github.event.head_commit.url }}` didn't build.
+            Commit `https://github.com/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha || github.sha }}` didn't build.
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
