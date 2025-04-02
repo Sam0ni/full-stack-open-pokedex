@@ -41,7 +41,7 @@ jobs:
         with:
           username: MrGithub
           nodetail: true
-          description: Success!
+          title: Success!
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           description: |
             The app has been deployed!
