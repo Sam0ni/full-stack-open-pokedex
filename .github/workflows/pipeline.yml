@@ -53,18 +53,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: on success
-        env:
-          WAS_SUCCESS: ${{ success() }}
-        if: ${{ env.WAS_SUCCESS == 'true' }}
+        if: success()
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: info
           details: Build completed succesfully
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: on failure
-        env:
-          WAS_SUCCESS: ${{ success() }}
-        if: ${{ env.WAS_SUCCESS == 'false' }}
+        if: failure()
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: error
