@@ -1,5 +1,11 @@
 name: Health Check
 
+on:
+  push:
+    branches:
+      - main
+      - side1
+
 jobs:
   health_check:
     runs-on: ubuntu-20.04
