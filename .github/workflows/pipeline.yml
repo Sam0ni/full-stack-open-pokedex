@@ -24,15 +24,6 @@ jobs:
         run: npm run test
       - name: Build app
         run: npm run build
-      - name: on failure
-        if: failure()
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          nodetail: true
-          title: "Build failed!"
-          description: |
-            Commit `${{ github.event.head_commit }}` didn't build.
       - name: Run e2e tests
         uses: cypress-io/github-action@v5
         with:
@@ -50,8 +41,19 @@ jobs:
         with:
           username: MrGithub
           nodetail: true
-          description: Success!
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          title: Success!
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          description: |
+            The app has been deployed!
+      - name: on failure
+        if: failure()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          nodetail: true
+          title: "Build failed!"
+          description: |
+            Commit `https://github.com/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha || github.sha }}` didn't build.
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
