@@ -26,13 +26,13 @@ jobs:
         run: npm run build
       - name: on failure
         if: failure()
-        uses: rjstone/discord-webhook-notify@v1.0.2
+        uses: sarisia/actions-status-discord@v1
         with:
-          severity: error
-          username: MrGithub
-          description: Error!
-          details: Build failed. ${{ toJson(github.event.head_commit) }}
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          nodetail: true
+          title: "Build failed!"
+          description: |
+            Commit `${{ github.event.head_commit }}` didn't build.
       - name: Run e2e tests
         uses: cypress-io/github-action@v5
         with:
@@ -45,14 +45,12 @@ jobs:
         if: ${{ github.event_name == 'push' &&  env.COMMIT_CONTAINS == 'false' }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
       - name: On deployment
-        if: success()
-        uses: rjstone/discord-webhook-notify@v1.0.2
+        if: ${{ github.event_name == 'push' &&  success() }}
+        uses: sarisia/actions-status-discord@v1
         with:
-          severity: info
           username: MrGithub
+          nodetail: true
           description: Success!
-          details: Build completed succesfully
-          text: Notification
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   tag_release:
     needs: [simple_deployment_pipeline]
