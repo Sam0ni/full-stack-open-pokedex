@@ -49,6 +49,7 @@ jobs:
         if: failure()
         uses: sarisia/actions-status-discord@v1
         with:
+          username: MrGithub
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           nodetail: true
           title: "Build failed!"
